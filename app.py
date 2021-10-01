@@ -27,13 +27,15 @@ Titulo = 'Dataset'
 
 # Cargar dataset
 try:
-    df1 = pd.read_csv('https://www.postdata.gov.co/sites/default/files/datasets/data/Monitoreo%20de%20Tr%C3%A1fico%20de%20Internet%20-%20Trafico%20Diario_131.csv', 
+    data_frame = pd.read_csv('https://www.postdata.gov.co/sites/default/files/datasets/data/Monitoreo%20de%20Tr%C3%A1fico%20de%20Internet%20-%20Trafico%20Diario_131.csv', 
         sep=';', 
         decimal=',')
 except:
-    df1 = ''
-    Titulo='No se pudo cargar el Dataset'
-    print('No se pudo leer el CSV')
+    data_frame = pd.read_csv('Dataset_TD.csv', 
+        sep=';', 
+        decimal=',')
+finally:
+    data_frame = data_frame[data_frame.PROVEEDOR.isin(["CLARO", "ETB", "UNE", "MOVISTAR", "EMCALI", "AVANTEL", "VIRGIN"])]
 
 
 # Generar tabla del dataset
@@ -61,7 +63,7 @@ app.layout = html.Div(children=[
 
     html.Div([
         html.H3('50 Columnas del dataset:'),
-        generate_table(df1)
+        generate_table(data_frame)
     ])
 ])
 
