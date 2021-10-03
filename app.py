@@ -3,6 +3,11 @@ from dash import dcc
 from dash import html
 import plotly.express as px
 import pandas as pd
+from datetime import datetime, timedelta
+
+from separar import *
+from graficas import *
+
 
 # JavaScript Externos (Bootstrap)
 external_scripts = [
@@ -23,8 +28,6 @@ external_stylesheets = [
     }
 ]
 
-Titulo = 'Dataset'
-
 # Cargar dataset
 try:
     data_frame = pd.read_csv('https://www.postdata.gov.co/sites/default/files/datasets/data/Monitoreo%20de%20Tr%C3%A1fico%20de%20Internet%20-%20Trafico%20Diario_131.csv', 
@@ -37,19 +40,30 @@ except:
 finally:
     data_frame = data_frame[data_frame.PROVEEDOR.isin(["CLARO", "ETB", "UNE", "MOVISTAR", "EMCALI", "AVANTEL", "VIRGIN"])]
 
+# Definir un rango de fechas
+fecha_inicial = datetime(2020,5,20)
+fecha_final = datetime(2020,5,30)
+rango_fechas = [fecha_inicial + timedelta(days=d) for d in range((fecha_final - fecha_inicial).days + 1)] 
+rango_fechas = [f.strftime('%#d-%#m-%Y') for f in rango_fechas]
+
+# Separar y agurpar los datos para el grafico
+df_gr = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
+df_gr = separar_columnas(df_gr, ['PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB']) # separar las columnas que necesito
+df_gr = df_gr.groupby("PROVEEDOR").sum() # agrupar por proveedor y sumar el trafico
+df_gr = df_gr.rename_axis('PROVEEDOR').reset_index()
+
+# Genrar grafica de barras
+grafico = gr_barras(df_gr, 'PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB')
+
+
+# filtrar el dataset
+df_tbl = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # filtar un rango de fechas
+df_tbl = separar_filas(df_tbl, 'PROVEEDOR', ['MOVISTAR', 'ETB']) # filtrar unos proveedores
+rango_trafico = [r for r in range(300000, 600000)] 
+df_tbl = separar_filas(df_tbl, 'TRAFICO_DATOS_LOCAL_GB', rango_trafico) # filtrar un rango de trafico
 
 # Generar tabla del dataset
-def generate_table(dataframe, max_rows=50):
-    return html.Table([
-        html.Thead(
-            html.Tr([html.Th(col) for col in dataframe.columns]),
-            className='table-dark'),
-        html.Tbody([
-            html.Tr([
-                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-            ]) for i in range(min(len(dataframe), max_rows))
-        ])
-    ], className='table')
+dataset = tabla(df_tbl)
 
 
 # Crear la aplicacion
@@ -58,12 +72,12 @@ app = dash.Dash(__name__,
                 external_stylesheets=external_stylesheets)
 
 # Layout de la aplicacion
-app.layout = html.Div(children=[
-    html.H1(Titulo),
-
+app.layout = html.Div([
     html.Div([
-        html.H3('50 Columnas del dataset:'),
-        generate_table(data_frame)
+        html.H3('Grafica de barras de trafico total en un rango de fechas por cada proveedor'),
+        grafico,
+        html.H3('Dataset con filtros de proveedor, rango de fechas y rango de trafico local:'),
+        dataset
     ])
 ])
 
