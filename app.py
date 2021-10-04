@@ -43,6 +43,7 @@ except:
 
 # Tratamiento de datos
 if not error:
+    # -------- VER TRAFICO DE DATOS SUMADO EN UN RANGO DE FECHAS --------
     # Definir un rango de fechas
     fecha_inicial = datetime(2020,5,20)
     fecha_final = datetime(2020,5,30)
@@ -59,22 +60,32 @@ if not error:
     grafico = gr_barras(df_gr1, 'PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB')
 
 
+    # -------- VER HORA PICO UN RANGO DE FECHAS --------
     # Separar los datos para el grafico
     df_gr2 = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
     df_gr2 = separar_columnas(df_gr2, ['PROVEEDOR', 'FECHA_DEL_DIA_DE_TRAFICO', 'HORA_PICO']) # separar las columnas que necesito
-    df_gr2['HORA_PICO'] = pd.to_datetime(df_gr2['HORA_PICO'], format="%H:%M")
+    df_gr2['HORA_PICO'] = pd.to_datetime(df_gr2['HORA_PICO'], format="%H:%M") # formatear la hora en formato datetime
     
-    
-
     # Genrar grafica de puntos
     grafico2 = gr_puntos(df_gr2, 'FECHA_DEL_DIA_DE_TRAFICO', 'HORA_PICO', 'PROVEEDOR')
 
 
+    # -------- VER TRAFICO DE DATOS EN UN RANGO DE FECHAS --------
+    # Separar los datos para el grafico
+    df_gr3 = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
+    df_gr3 = separar_columnas(df_gr3, ['PROVEEDOR', 'FECHA_DEL_DIA_DE_TRAFICO', 'TRAFICO_DATOS_LOCAL_GB']) # separar las columnas que necesito
+    
+    # Genrar grafica de puntos
+    grafico3 = gr_lineas(df_gr3, 'FECHA_DEL_DIA_DE_TRAFICO', 'TRAFICO_DATOS_LOCAL_GB', 'PROVEEDOR')
+
+    
+    # -------- VER ENTRADAS DEL DATASET --------
     # filtrar el dataset
     df_tbl = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # filtar un rango de fechas
     df_tbl = separar_filas(df_tbl, 'PROVEEDOR', ['MOVISTAR', 'ETB']) # filtrar unos proveedores
     rango_trafico = [r for r in range(300000, 600000)] 
     df_tbl = separar_filas(df_tbl, 'TRAFICO_DATOS_LOCAL_GB', rango_trafico) # filtrar un rango de trafico
+
 
     # Generar tabla del dataset
     dataset = tabla(df_tbl)
@@ -102,6 +113,8 @@ if not error:
             grafico,
             html.H3('Grafica de puntos de hora pico en un rango de fechas por cada proveedor'),
             grafico2,
+            html.H3('Grafica de lineas de trafico local en un rango de fechas por cada proveedor'),
+            grafico3,
             html.H3('Dataset con filtros de proveedor, rango de fechas y rango de trafico local:'),
             dataset
         ])
