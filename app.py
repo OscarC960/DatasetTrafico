@@ -4,6 +4,7 @@ from dash import html
 import plotly.express as px
 import pandas as pd
 from datetime import datetime, timedelta
+import numpy as np
 
 from separar import *
 from graficas import *
@@ -49,13 +50,24 @@ if not error:
     rango_fechas = [f.strftime('%#d-%#m-%Y') for f in rango_fechas]
 
     # Separar y agurpar los datos para el grafico
-    df_gr = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
-    df_gr = separar_columnas(df_gr, ['PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB']) # separar las columnas que necesito
-    df_gr = df_gr.groupby("PROVEEDOR").sum() # agrupar por proveedor y sumar el trafico
-    df_gr = df_gr.rename_axis('PROVEEDOR').reset_index()
+    df_gr1 = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
+    df_gr1 = separar_columnas(df_gr1, ['PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB']) # separar las columnas que necesito
+    df_gr1 = df_gr1.groupby("PROVEEDOR").sum() # agrupar por proveedor y sumar el trafico
+    df_gr1 = df_gr1.rename_axis('PROVEEDOR').reset_index()
 
     # Genrar grafica de barras
-    grafico = gr_barras(df_gr, 'PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB')
+    grafico = gr_barras(df_gr1, 'PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB')
+
+
+    # Separar los datos para el grafico
+    df_gr2 = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
+    df_gr2 = separar_columnas(df_gr2, ['PROVEEDOR', 'FECHA_DEL_DIA_DE_TRAFICO', 'HORA_PICO']) # separar las columnas que necesito
+    df_gr2['HORA_PICO'] = pd.to_datetime(df_gr2['HORA_PICO'], format="%H:%M")
+    
+    
+
+    # Genrar grafica de puntos
+    grafico2 = gr_puntos(df_gr2, 'FECHA_DEL_DIA_DE_TRAFICO', 'HORA_PICO', 'PROVEEDOR')
 
 
     # filtrar el dataset
@@ -88,6 +100,8 @@ if not error:
         html.Div([
             html.H3('Grafica de barras de trafico total en un rango de fechas por cada proveedor'),
             grafico,
+            html.H3('Grafica de puntos de hora pico en un rango de fechas por cada proveedor'),
+            grafico2,
             html.H3('Dataset con filtros de proveedor, rango de fechas y rango de trafico local:'),
             dataset
         ])
