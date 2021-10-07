@@ -56,7 +56,7 @@ if not error:
     df_gr1 = df_gr1.groupby("PROVEEDOR").sum() # agrupar por proveedor y sumar el trafico
     df_gr1 = df_gr1.rename_axis('PROVEEDOR').reset_index()
 
-    # Genrar grafica de barras
+    # Generar grafica de barras
     grafico = gr_barras(df_gr1, 'PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB')
 
 
@@ -66,7 +66,7 @@ if not error:
     df_gr2 = separar_columnas(df_gr2, ['PROVEEDOR', 'FECHA_DEL_DIA_DE_TRAFICO', 'HORA_PICO']) # separar las columnas que necesito
     df_gr2['HORA_PICO'] = pd.to_datetime(df_gr2['HORA_PICO'], format="%H:%M") # formatear la hora en formato datetime
     
-    # Genrar grafica de puntos
+    # Generar grafica de puntos
     grafico2 = gr_puntos(df_gr2, 'FECHA_DEL_DIA_DE_TRAFICO', 'HORA_PICO', 'PROVEEDOR')
 
 
@@ -75,10 +75,26 @@ if not error:
     df_gr3 = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
     df_gr3 = separar_columnas(df_gr3, ['PROVEEDOR', 'FECHA_DEL_DIA_DE_TRAFICO', 'TRAFICO_DATOS_LOCAL_GB']) # separar las columnas que necesito
     
-    # Genrar grafica de puntos
+    # Generar grafica de puntos
     grafico3 = gr_lineas(df_gr3, 'FECHA_DEL_DIA_DE_TRAFICO', 'TRAFICO_DATOS_LOCAL_GB', 'PROVEEDOR')
 
+    # Separar y agurpar los datos para el grafico 4
+    df_gr4 = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
+    df_gr4 = separar_columnas(df_gr4, ['PROVEEDOR', 'TRAFICO_DATOS_TOTAL_GB']) # separar las columnas que necesito
+    df_gr4 = df_gr4.groupby("PROVEEDOR").sum() # agrupar por proveedor y sumar el trafico
+    df_gr4 = df_gr4.rename_axis('PROVEEDOR').reset_index()
+
+    # Generar grafica de barras
+    grafico4 = gr_barras(df_gr4, 'PROVEEDOR', 'TRAFICO_DATOS_TOTAL_GB')
+
+    #-------- VER TRAFICO DE DATOS TOTAL EN UN RANGO DE FECHAS --------
+    #Separar los datos para el grafico
+    df_gr5 = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
+    df_gr5 = separar_columnas(df_gr5, ['PROVEEDOR', 'FECHA_DEL_DIA_DE_TRAFICO', 'TRAFICO_DATOS_ACUERDOS_DE_TRANSITO_O_PEERING_DIRECTO_GB']) # separar las columnas que necesito
     
+    #Generar grafica de puntos para trafico de datos con acuerdos
+    grafico5 = gr_lineas(df_gr5, 'FECHA_DEL_DIA_DE_TRAFICO', 'TRAFICO_DATOS_ACUERDOS_DE_TRANSITO_O_PEERING_DIRECTO_GB', 'PROVEEDOR')
+
     # -------- VER ENTRADAS DEL DATASET --------
     # filtrar el dataset
     df_tbl = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # filtar un rango de fechas
@@ -115,6 +131,10 @@ if not error:
             grafico2,
             html.H3('Grafica de lineas de trafico local en un rango de fechas por cada proveedor'),
             grafico3,
+            html.H3('Grafica de barras de trafico total en un rango de fechas por cada proveedor.'),
+            grafico4,
+            html.H3('Grafica de lineas de cantidad de GB de tráfico por modalidad/acuerdos peering por cada proveedor.'),
+            grafico5,
             html.H3('Dataset con filtros de proveedor, rango de fechas y rango de trafico local:'),
             dataset
         ])
