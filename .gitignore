@@ -1,0 +1,5 @@
+__pycache__/
+.pytest_cache/
+Dataset_LB.csv
+Dataset_TD.csv
+pruebas.py
