@@ -70,7 +70,7 @@ if not error:
     grafico2 = gr_puntos(df_gr2, 'FECHA_DEL_DIA_DE_TRAFICO', 'HORA_PICO', 'PROVEEDOR')
 
 
-    # -------- VER TRAFICO DE DATOS EN UN RANGO DE FECHAS --------
+    # -------- VER TRAFICOS DE DATOS AGRUPADOS EN UN RANGO DE FECHAS --------
     # Separar los datos para el grafico
     df_gr3 = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
     df_gr3 = separar_columnas(df_gr3, ['PROVEEDOR', 'FECHA_DEL_DIA_DE_TRAFICO', 'TRAFICO_DATOS_LOCAL_GB']) # separar las columnas que necesito
@@ -80,12 +80,12 @@ if not error:
 
     # Separar y agurpar los datos para el grafico 4
     df_gr4 = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
-    df_gr4 = separar_columnas(df_gr4, ['PROVEEDOR', 'TRAFICO_DATOS_TOTAL_GB']) # separar las columnas que necesito
+    df_gr4 = separar_columnas(df_gr4, ['PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB','TRAFICO_DATOS_NAP_COLOMBIA_GB','TRAFICO_DATOS_ACUERDOS_DE_TRANSITO_O_PEERING_DIRECTO_GB','TRAFICO_DATOS_LOCAL_GB','TRAFICO_DATOS_TOTAL_GB']) # separar las columnas que necesito
     df_gr4 = df_gr4.groupby("PROVEEDOR").sum() # agrupar por proveedor y sumar el trafico
     df_gr4 = df_gr4.rename_axis('PROVEEDOR').reset_index()
 
-    # Generar grafica de barras
-    grafico4 = gr_barras(df_gr4, 'PROVEEDOR', 'TRAFICO_DATOS_TOTAL_GB')
+    # Generar grafica de barras agrupadas
+    grafico4 = gr_barras_agr(df_gr4, 'PROVEEDOR', ['TRAFICO_DATOS_INTERNACIONAL_GB','TRAFICO_DATOS_NAP_COLOMBIA_GB','TRAFICO_DATOS_ACUERDOS_DE_TRANSITO_O_PEERING_DIRECTO_GB','TRAFICO_DATOS_LOCAL_GB'])
 
     #-------- VER TRAFICO DE DATOS TOTAL EN UN RANGO DE FECHAS --------
     #Separar los datos para el grafico

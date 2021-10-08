@@ -8,6 +8,12 @@ def gr_barras(data_frame, eje_x, eje_y):
         figure=fig
     )
 
+def gr_barras_agr(data_frame, eje_x, eje_y):
+    fig = px.bar(data_frame, x=eje_x, y=eje_y, barmode='group')
+    return dcc.Graph(
+        figure=fig
+    )
+
 def gr_puntos(data_frame, eje_x, eje_y, colores):
     fig = px.scatter(data_frame, x=eje_x, y=eje_y, color=colores)
     return dcc.Graph(
