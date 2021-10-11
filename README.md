@@ -150,5 +150,5 @@ Con las herramientas:
 |2|Ver Trafico diario|Implementación de la interfaz de usuario que permite seleccionar un rango de fechas y tipo de trafico y mostrar la gráfica  * |
 |2|Ver Tráficos|Implementación de la interfaz de usuario que permite seleccionar un rango de fechas y mostrar la gráfica * |
 
-* No es una tarea nueva, se puede reutilizar el código anterior.
+\* No es una tarea nueva, se puede reutilizar el código anterior.
 
