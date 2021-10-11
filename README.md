@@ -152,3 +152,5 @@ Con las herramientas:
 
 \* No es una tarea nueva, se puede reutilizar el código anterior.
 
+La documentación se puede consultar en el siguiente [enlace](https://drive.google.com/drive/folders/10AeTHDl8H94QdgPynuiLoOMxhRXfrpW5?usp=sharing)
+
