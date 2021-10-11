@@ -28,7 +28,6 @@ El alcance de la aplicación está delimitado por una aplicación web que muestr
 ## Requisitos Funcionales
 
 |Requerimiento|Descripción|
-|Requerimiento|Descripción|
 |:----|:----|
 |RF01_Ver Tráfico Proveedores|Muestra la gráfica correspondiente a la información de tráfico total de los 7 proveedores.|
 |RF02_Ver Hora Pico|Mostrar una gráfica donde se pueda observar la hora pico de tráfico de unas fechas elegidas para cada uno de los 7 proveedores.|
@@ -40,6 +39,7 @@ El alcance de la aplicación está delimitado por una aplicación web que muestr
 
 ## Requisitos No Funcionales
 
+|Requerimiento|Descripción|
 |:----|:----|
 |RNF01_Gráficos Dinámicos|El aplicativo debe mostrar las gráficas de manera dinámica y en tiempo real de acuerdo a los datos que se tienen en el dataset. Con posibilidad de hacer zoom en ellos.|
 |RNF02_Tipos de Gráficos|El aplicativo web debe emplear en su preferencia la mayor cantidad de tipos de gráficos según los 7 proveedores elegidos.|
