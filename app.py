@@ -26,15 +26,15 @@ except:
 
 # ----- FUNCIONES GENERADORAS DE GRAFICOS -----
 
-def gr_tr_total(rango_fechas):
+def gr_tr_total(rango_fechas, tipo_trafico):
     # Separar y agurpar los datos para el grafico
     df_gr = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
-    df_gr = separar_columnas(df_gr, ['PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB']) # separar las columnas que necesito
+    df_gr = separar_columnas(df_gr, ['PROVEEDOR', tipo_trafico]) # separar las columnas que necesito
     df_gr = df_gr.groupby("PROVEEDOR").sum() # agrupar por proveedor y sumar el trafico
     df_gr = df_gr.rename_axis('PROVEEDOR').reset_index()
 
     # Generar grafica de barras
-    return gr_barras(df_gr, 'PROVEEDOR', 'TRAFICO_DATOS_INTERNACIONAL_GB')
+    return gr_barras(df_gr, 'PROVEEDOR', tipo_trafico)
 
 
 def gr_hr_pico(rango_fechas):
@@ -47,13 +47,13 @@ def gr_hr_pico(rango_fechas):
     return gr_puntos(df_gr, 'FECHA_DEL_DIA_DE_TRAFICO', 'HORA_PICO', 'PROVEEDOR')
 
 
-def gr_tr_diario(rango_fechas):
+def gr_tr_diario(rango_fechas, tipo_trafico):
     # Separar los datos para el grafico
     df_gr = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
-    df_gr = separar_columnas(df_gr, ['PROVEEDOR', 'FECHA_DEL_DIA_DE_TRAFICO', 'TRAFICO_DATOS_LOCAL_GB']) # separar las columnas que necesito
+    df_gr = separar_columnas(df_gr, ['PROVEEDOR', 'FECHA_DEL_DIA_DE_TRAFICO', tipo_trafico]) # separar las columnas que necesito
 
     # Generar grafica de puntos
-    return gr_lineas(df_gr, 'FECHA_DEL_DIA_DE_TRAFICO', 'TRAFICO_DATOS_LOCAL_GB', 'PROVEEDOR')
+    return gr_lineas(df_gr, 'FECHA_DEL_DIA_DE_TRAFICO', tipo_trafico, 'PROVEEDOR')
 
 
 def gr_tr_detallado(rango_fechas):
@@ -112,18 +112,30 @@ sidebar = html.Div([
 # ----- CONTENIDO -----
 content = html.Div([
     html.H2(id='titulo'),
-    dcc.DatePickerRange(
-        id='input_fecha',
-        min_date_allowed=date(2020, 3, 30),
-        max_date_allowed=date(2021, 9, 21),
-        initial_visible_month=date(2020, 5, 20),
-        
-        start_date=date(2020, 5, 20),
-        end_date=date(2020, 5, 30)
-    ),
+    dbc.Row(id='filtros'),
     html.Div(id='grafico')
 ], id="page-content", style=CONTENT_STYLE)
 
+filtro_fechas = dcc.DatePickerRange(
+    id='input_fecha',
+    min_date_allowed=date(2020, 3, 30),
+    max_date_allowed=date(2021, 9, 21),
+    initial_visible_month=date(2020, 5, 20),
+    
+    start_date=date(2020, 5, 20),
+    end_date=date(2020, 5, 30)
+)
+
+filtro_tipo_tr = dcc.Dropdown(
+    id="filtro",
+    options=[
+        {"label": 'Tráfico Internacional', "value": 'TRAFICO_DATOS_INTERNACIONAL_GB'},
+        {"label": 'Tráfico NAP Colombia', "value": 'TRAFICO_DATOS_NAP_COLOMBIA_GB'},
+        {"label": 'Tráfico Peering', "value": 'TRAFICO_DATOS_ACUERDOS_DE_TRANSITO_O_PEERING_DIRECTO_GB'},
+        {"label": 'Tráfico Local', "value": 'TRAFICO_DATOS_LOCAL_GB'},
+        {"label": 'Todo el Tráfico', "value": 'TRAFICO_DATOS_TOTAL_GB'}],
+    value="TRAFICO_DATOS_TOTAL_GB",
+)
 
 # ----- CREACION DE LA APP -----
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -133,7 +145,7 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 @app.callback(
     Output("titulo", "children"), 
     Input("url", "pathname"))
-def render_page_content(pathname):
+def cambiar_titulo(pathname):
     if pathname == "/":
         return 'Trafico total en un rango de fechas'
     elif pathname == "/Hora-Pico":
@@ -148,11 +160,29 @@ def render_page_content(pathname):
     return html.Div('Error al cargar el sitio')
 
 @app.callback(
+    Output("filtros", "children"), 
+    Input("url", "pathname"))
+def cambiar_filtros(pathname):
+    if pathname == "/":
+        return [dbc.Col(filtro_fechas), dbc.Col(filtro_tipo_tr)]
+    elif pathname == "/Hora-Pico":
+        return [dbc.Col(filtro_fechas), dbc.Col(filtro_tipo_tr)]
+    elif pathname == "/Trafico-Diario":
+        return [dbc.Col(filtro_fechas), dbc.Col(filtro_tipo_tr)]
+    elif pathname == "/Trafico-Detallado":
+        return [dbc.Col(filtro_fechas), dbc.Col(filtro_tipo_tr)]
+    elif pathname == "/Dataset":
+        return []
+    
+    return html.Div('Error al cargar el sitio')
+
+@app.callback(
     Output('grafico', 'children'),
     Input('input_fecha', 'start_date'),
     Input('input_fecha', 'end_date'),
-    Input("url", "pathname"))
-def update_output(start_date, end_date, pathname):
+    Input("url", "pathname"),
+    Input('filtro', 'value'))
+def cambiar_grafico(start_date, end_date, pathname, value):
 
     if start_date is not None:
         fecha_inicial = date.fromisoformat(start_date)
@@ -164,11 +194,11 @@ def update_output(start_date, end_date, pathname):
     rango_fechas = [f.strftime('%#d-%#m-%Y') for f in rango_fechas]
 
     if pathname == "/":
-        return gr_tr_total(rango_fechas)
+        return gr_tr_total(rango_fechas, value)
     elif pathname == "/Hora-Pico":
         return gr_hr_pico(rango_fechas)
     elif pathname == "/Trafico-Diario":
-        return gr_tr_diario(rango_fechas)
+        return gr_tr_diario(rango_fechas, value)
     elif pathname == "/Trafico-Detallado":
         return gr_tr_detallado(rango_fechas)
     elif pathname == "/Dataset":
