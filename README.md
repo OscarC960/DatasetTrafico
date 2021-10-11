@@ -40,7 +40,6 @@ El alcance de la aplicación está delimitado por una aplicación web que muestr
 
 ## Requisitos No Funcionales
 
-|Requerimiento|Descripción|
 |:----|:----|
 |RNF01_Gráficos Dinámicos|El aplicativo debe mostrar las gráficas de manera dinámica y en tiempo real de acuerdo a los datos que se tienen en el dataset. Con posibilidad de hacer zoom en ellos.|
 |RNF02_Tipos de Gráficos|El aplicativo web debe emplear en su preferencia la mayor cantidad de tipos de gráficos según los 7 proveedores elegidos.|
