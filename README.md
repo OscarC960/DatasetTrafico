@@ -28,20 +28,23 @@ El alcance de la aplicación está delimitado por una aplicación web que muestr
 ## Requisitos Funcionales
 
 |Requerimiento|Descripción|
-|:---:|:---:|
-|RF01_Ver Tráfico Total|Muestra la gráfica correspondiente a la información de tráfico total de un tipo en un rango de fechas de los 7 proveedores.|
-|RF02_Ver Hora Pico|Mostrar una gráfica donde se pueda observar la hora pico de tráfico de unas fechas para cada uno de los 7 proveedores.|
-|RF03_Ver Tráfico Diario|Muestra la gráfica correspondiente a la información del tráfico diario de un tipo en unas fechas de los 7 proveedores.|
-|RF04_Ver Tráficos|Muestra la gráfica correspondiente a la información de tráfico total de cada tipo en un rango de fechas de los 7 proveedores.|
-|RF05_Ver Entrada del data set|Mostrar una tabla con una o varias entradas del dataset según un rango de fechas|
+|Requerimiento|Descripción|
+|:----|:----|
+|RF01_Ver Tráfico Proveedores|Muestra la gráfica correspondiente a la información de tráfico total de los 7 proveedores.|
+|RF02_Ver Hora Pico|Mostrar una gráfica donde se pueda observar la hora pico de tráfico de unas fechas elegidas para cada uno de los 7 proveedores.|
+|RF03_Ver Fecha Pico|Mostrar una gráfica donde se pueda observar la fecha pico de tráfico de unas fechas elegidas para cada uno de los 7 proveedores.|
+|RF04_Ver Trafico Internacional|Mostrar una gráfica donde se pueda observar la cantidad de GB de tráfico Internacional de los 7 proveedores.|
+|RF05_Ver Tráfico Nacional|Mostrar una gráfica donde se pueda observar la cantidad de GB de tráfico Nacional de los 7 proveedores.|
+|RF06_Ver Tráfico Peering|Mostrar una gráfica donde se pueda observar la cantidad de GB de tráfico por modalidad/acuerdos peering de los 7 proveedores.|
+|RF07_Ver Entradas del dataset|Mostrar una tabla con una o varias entradas del dataset según los criterios de búsqueda del usuario (filtrar un proveedor, un rango de fechas, un rango límite de tráfico).|
 
 ## Requisitos No Funcionales
 
 |Requerimiento|Descripción|
 |:----|:----|
 |RNF01_Gráficos Dinámicos|El aplicativo debe mostrar las gráficas de manera dinámica y en tiempo real de acuerdo a los datos que se tienen en el dataset. Con posibilidad de hacer zoom en ellos.|
-|RNF02_Tipos de Gráficos|El aplicativo web debe emplear los tipos de graficos más adecuados a la informacion que se quiere mostrar.|
-|RNF03_Presentación de Gráficos|El aplicativo debe mostrar en los casos necesarios, la opción para elegir un rango de fechas o un tipo de trafico según la informacion que se quiere ver.|
+|RNF02_Tipos de Gráficos|El aplicativo web debe emplear en su preferencia la mayor cantidad de tipos de gráficos según los 7 proveedores elegidos.|
+|RNF03_Presentación de Gráficos|El aplicativo debe mostrar en los casos necesarios, la opción para elegir alguno de los proveedores para un gráfico particular. (Filtros a los que haya lugar, més, proveedor, etc...).|
 
 ## Historias de Usuario
 
