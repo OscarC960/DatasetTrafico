@@ -41,7 +41,7 @@ def gr_hr_pico(rango_fechas):
     # Separar los datos para el grafico
     df_gr = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # separar filas en ese rango de fechas
     df_gr = separar_columnas(df_gr, ['PROVEEDOR', 'FECHA_DEL_DIA_DE_TRAFICO', 'HORA_PICO']) # separar las columnas que necesito
-    df_gr['HORA_PICO'] = pd.to_datetime(df_gr['HORA_PICO'], format="%H:%M") # formatear la hora en formato datetime
+    df_gr['HORA_PICO'] = pd.to_datetime(df_gr['HORA_PICO']).dt.time # formatear la hora en formato datetime
 
     # Generar grafica de puntos
     return gr_puntos(df_gr, 'FECHA_DEL_DIA_DE_TRAFICO', 'HORA_PICO', 'PROVEEDOR')
@@ -69,9 +69,6 @@ def gr_tr_detallado(rango_fechas):
 def tbl_dataset(rango_fechas):
     # filtrar el dataset
     df_tbl = separar_filas(data_frame, 'FECHA_DEL_DIA_DE_TRAFICO', rango_fechas) # filtar un rango de fechas
-    df_tbl = separar_filas(df_tbl, 'PROVEEDOR', ['MOVISTAR', 'ETB']) # filtrar unos proveedores
-    rango_trafico = [r for r in range(300000, 600000)] 
-    df_tbl = separar_filas(df_tbl, 'TRAFICO_DATOS_LOCAL_GB', rango_trafico) # filtrar un rango de trafico
 
     # Generar tabla del dataset
     return tabla(df_tbl)
@@ -110,13 +107,7 @@ sidebar = html.Div([
 ], style=SIDEBAR_STYLE, className="text-white bg-dark")
 
 # ----- CONTENIDO -----
-content = html.Div([
-    html.H2(id='titulo'),
-    dbc.Row(id='filtros'),
-    html.Div(id='grafico')
-], id="page-content", style=CONTENT_STYLE)
-
-filtro_fechas = dcc.DatePickerRange(
+filtro_fecha = dcc.DatePickerRange(
     id='input_fecha',
     min_date_allowed=date(2020, 3, 30),
     max_date_allowed=date(2021, 9, 21),
@@ -125,7 +116,6 @@ filtro_fechas = dcc.DatePickerRange(
     start_date=date(2020, 5, 20),
     end_date=date(2020, 5, 30)
 )
-
 filtro_tipo_tr = dcc.Dropdown(
     id="filtro",
     options=[
@@ -136,6 +126,16 @@ filtro_tipo_tr = dcc.Dropdown(
         {"label": 'Todo el Tráfico', "value": 'TRAFICO_DATOS_TOTAL_GB'}],
     value="TRAFICO_DATOS_TOTAL_GB",
 )
+filtros = dbc.Row([
+    dbc.Col(filtro_fecha),
+    dbc.Col(filtro_tipo_tr)
+],id='filtros')
+content = html.Div([
+    html.H2(id='titulo'),
+    filtros,
+    html.Div(id='grafico')
+], id="page-content", style=CONTENT_STYLE)
+
 
 # ----- CREACION DE LA APP -----
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -159,22 +159,22 @@ def cambiar_titulo(pathname):
     
     return html.Div('Error al cargar el sitio')
 
-@app.callback(
-    Output("filtros", "children"), 
+@app.callback( 
+    Output('filtros', 'children'),
     Input("url", "pathname"))
 def cambiar_filtros(pathname):
     if pathname == "/":
-        return [dbc.Col(filtro_fechas), dbc.Col(filtro_tipo_tr)]
+        filtro_tipo_tr.disabled = False
     elif pathname == "/Hora-Pico":
-        return [dbc.Col(filtro_fechas), dbc.Col(filtro_tipo_tr)]
+        filtro_tipo_tr.disabled = True
     elif pathname == "/Trafico-Diario":
-        return [dbc.Col(filtro_fechas), dbc.Col(filtro_tipo_tr)]
+        filtro_tipo_tr.disabled = False
     elif pathname == "/Trafico-Detallado":
-        return [dbc.Col(filtro_fechas), dbc.Col(filtro_tipo_tr)]
+        filtro_tipo_tr.disabled = True
     elif pathname == "/Dataset":
-        return []
+        filtro_tipo_tr.disabled = True
     
-    return html.Div('Error al cargar el sitio')
+    return filtros.children
 
 @app.callback(
     Output('grafico', 'children'),
